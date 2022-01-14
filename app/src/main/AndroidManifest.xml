@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuizLocker">
         <activity
-            android:name=".PrefExActivity"
+            android:name=".PrefFragmentActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,8 +21,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FileExActivity"
+            android:name=".PrefExActivity"
             android:exported="true"></activity>
+        <activity
+            android:name=".FileExActivity"
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true" />
