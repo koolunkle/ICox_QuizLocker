@@ -3,7 +3,10 @@
     package="com.icox.quizlocker">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -12,6 +15,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QuizLocker">
+        <service
+            android:name=".LockScreenService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
             android:name=".ScreenOffExActivity"
             android:exported="true">
@@ -23,7 +31,7 @@
         </activity>
         <activity
             android:name=".PrefFragmentActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".PrefExActivity"
             android:exported="true" />
