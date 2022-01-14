@@ -3,11 +3,18 @@ package com.icox.quizlocker
 import android.app.KeyguardManager
 import android.content.Context
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_quiz_locker.*
+import org.json.JSONArray
+import org.json.JSONObject
+import java.util.*
 
 class QuizLockerActivity : AppCompatActivity() {
+
+    var quiz: JSONObject? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz_locker)
@@ -33,5 +40,18 @@ class QuizLockerActivity : AppCompatActivity() {
 //        화면을 켜진 상태로 유지
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_quiz_locker)
+
+//        퀴즈 데이터를 가져온다
+        val json = assets.open("capital.json").reader().readText()
+        val quizArray = JSONArray(json)
+
+//        퀴즈를 선택한다
+        quiz = quizArray.getJSONObject(Random().nextInt(quizArray.length()))
+
+//        퀴즈를 보여준다
+        quizLabel.text = quiz?.getString("question")
+        choice1.text = quiz?.getString("choice1")
+        choice2.text = quiz?.getString("choice2")
     }
+
 }
