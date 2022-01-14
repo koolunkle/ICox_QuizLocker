@@ -1,12 +1,16 @@
 package com.icox.quizlocker
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.text.TextUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_file_ex.*
 import java.io.File
 import java.io.FileInputStream
@@ -20,6 +24,9 @@ class FileExActivity : AppCompatActivity() {
 
     // 권한이 있는지 저장하는 변수
     var granted = false
+
+    // 권한 요청 시 사용할 요청 코드
+    val PERMISSION_REQUEST = 999
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +52,10 @@ class FileExActivity : AppCompatActivity() {
 //                    saveToInnerStorage(text, fileName)
 
 //                    외부 저장소 파일에 저장하는 함수 호출
-                    saveToExternalStorage(text, fileName)
+//                    saveToExternalStorage(text, fileName)
+
+//                    외부 저장소 "/sdcard/data.txt" 에 데이터 저장
+                    saveToExternalCustomDirectory(text)
                 }
             }
         }
@@ -60,8 +70,7 @@ class FileExActivity : AppCompatActivity() {
 //                textField.setText(loadFromExternalStorage(fileName))
 
 //                외부 저장소 "/sdcard/data.txt" 에서 데이터를 불러온다
-//                textField.setText(loadFromExternalCustomDirectory())
-                textField.setText(loadFromExternalStorage(fileName))
+                textField.setText(loadFromExternalCustomDirectory())
             } catch (e: FileNotFoundException) {
 //                파일이 없는 경우 에러 메세지 보여줌
                 Toast.makeText(applicationContext, "저장된 텍스트가 없습니다.", Toast.LENGTH_SHORT).show()
@@ -134,6 +143,84 @@ class FileExActivity : AppCompatActivity() {
     // 외부 저장소 앱 전용 디렉토리에서 파일 데이터를 불러오는 함수
     fun loadFromExternalStorage(fileName: String): String {
         return FileInputStream(getAppDataFileFromExternalStorage(fileName)).reader().readText()
+    }
+
+    // 권한 체크 및 요청 함수
+    fun checkPermission() {
+
+        val permissionCheck = ContextCompat.checkSelfPermission(
+            this@FileExActivity,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        when {
+            permissionCheck != PackageManager.PERMISSION_GRANTED -> {
+//            권한 요청
+                ActivityCompat.requestPermissions(
+                    this@FileExActivity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    PERMISSION_REQUEST
+                )
+            }
+        }
+
+    }
+
+    // 권한 요청 결과 콜백 함수
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            PERMISSION_REQUEST -> {
+                when {
+                    grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+//                        권한 요청 성공
+                        granted = true
+                    }
+                    else -> {
+//                        사용자가 권한을 허용하지 않음
+                        granted = false
+                    }
+                }
+            }
+        }
+    }
+
+    // 임의 경로의 파일에 데이터를 저장하는 함수
+    fun saveToExternalCustomDirectory(text: String, filepath: String = "/sdcard/data.txt") {
+
+        when {
+//            권한이 있는 경우
+            granted -> {
+//                파라미터로 전달 받은 경로 파일의 출력 스트림 객체 생성
+                val fileOutputStream = FileOutputStream(File(filepath))
+                fileOutputStream.write(text.toByteArray())
+                fileOutputStream.close()
+            }
+//            권한이 없는 경우
+            else -> {
+                Toast.makeText(applicationContext, "권한이 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    }
+
+    // 임의 경로의 파일에서 데이터를 읽는 함수
+    fun loadFromExternalCustomDirectory(filepath: String = "/sdcard/data.txt"): String {
+
+        when {
+//            권한이 있는 경우
+            granted -> {
+                return FileInputStream(File(filepath)).reader().readText()
+            }
+//            권한이 없는 경우
+            else -> {
+                Toast.makeText(applicationContext, "권한이 없습니다.", Toast.LENGTH_SHORT).show()
+                return ""
+            }
+        }
+
     }
 
 }
