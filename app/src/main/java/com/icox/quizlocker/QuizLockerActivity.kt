@@ -4,6 +4,8 @@ import android.app.KeyguardManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.WindowManager
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
@@ -112,6 +114,17 @@ class QuizLockerActivity : AppCompatActivity() {
                     leftImageView.setImageResource(R.drawable.padlock)
                     rightImageView.setImageResource(R.drawable.padlock)
                     seekBar?.progress = 50
+
+//                    정답이 아닌 경우 진동 알림 추가
+                    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+//                    SDK 버전에 따라 호출
+                    if (Build.VERSION.SDK_INT >= 26) {
+//                        1초 동안 100의 세기로 (최고 255) 1회 진동
+                        vibrator.vibrate(VibrationEffect.createOneShot(1000, 100))
+                    } else {
+//                        1초 동안 진동
+                        vibrator.vibrate(1000)
+                    }
                 }
             }
         }
