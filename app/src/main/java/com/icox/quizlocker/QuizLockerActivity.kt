@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_quiz_locker.*
 import org.json.JSONArray
@@ -52,6 +53,68 @@ class QuizLockerActivity : AppCompatActivity() {
         quizLabel.text = quiz?.getString("question")
         choice1.text = quiz?.getString("choice1")
         choice2.text = quiz?.getString("choice2")
+
+//        SeekBar 의 값이 변경될 때 불리는 Listener
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+
+            // progress 값이 변경될 때 불리는 함수
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                when {
+//                    SeekBar 의 우측 끝으로 가면 choice2 를 선택한 것으로 간주한다
+                    progress > 95 -> {
+                        leftImageView.setImageResource(R.drawable.padlock)
+//                        우측 ImageView 의 자물쇠 아이콘을 열림 아이콘으로 변경
+                        rightImageView.setImageResource(R.drawable.unlock)
+                    }
+//                    SeekBar 의 좌측 끝으로 가면 choice1 을 선택한 것으로 간주한다
+                    progress < 5 -> {
+//                        좌측 ImageView 의 자물쇠 아이콘을 열림 아이콘으로 변경
+                        leftImageView.setImageResource(R.drawable.unlock)
+                        rightImageView.setImageResource(R.drawable.padlock)
+                    }
+//                    양쪽 끝이 아닌 경우
+                    else -> {
+//                        양쪽 이미지를 모두 잠금 아이콘으로 변경
+                        leftImageView.setImageResource(R.drawable.padlock)
+                        rightImageView.setImageResource(R.drawable.padlock)
+                    }
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            // 터치 조작을 끝낸 경우 불리는 함수
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                val progress = seekBar?.progress ?: 50
+                when {
+//                    우측 끝의 답을 선택한 경우
+                    progress > 95 -> checkChoice(quiz?.getString("choice2") ?: "")
+//                    좌측 끝의 답을 선택한 경우
+                    progress < 5 -> checkChoice(quiz?.getString("choice1") ?: "")
+//                    양끝이 아닌 경우 seekBar 의 progress 를 중앙값으로 초기화
+                    else -> seekBar?.progress = 50
+                }
+            }
+
+        })
+    }
+
+    // 정답 체크 함수
+    fun checkChoice(choice: String) {
+        quiz?.let {
+            when {
+//               choice 의 텍스트가 정답 텍스트와 같으면 Activity 종료
+                choice == it.getString("answer") -> finish()
+                else -> {
+//                   정답이 아닌 경우 UI 초기화
+                    leftImageView.setImageResource(R.drawable.padlock)
+                    rightImageView.setImageResource(R.drawable.padlock)
+                    seekBar?.progress = 50
+                }
+            }
+        }
     }
 
 }
