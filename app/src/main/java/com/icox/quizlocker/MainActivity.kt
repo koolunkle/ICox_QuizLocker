@@ -1,5 +1,6 @@
 package com.icox.quizlocker
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.preference.MultiSelectListPreference
 import android.preference.PreferenceFragment
 import android.preference.SwitchPreference
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,6 +20,19 @@ class MainActivity : AppCompatActivity() {
 
 //        preferenceContent FrameLayout 영역을 PreferenceFragment 로 교체
         fragmentManager.beginTransaction().replace(R.id.preferenceContent, fragment).commit()
+
+//        버튼이 클릭되면 initAnswerCount() 함수 실행
+        initButton.setOnClickListener { initAnswerCount() }
+    }
+
+    fun initAnswerCount() {
+//        정/오답 횟수 설정 정보를 가져온다
+        val correctAnswerPref = getSharedPreferences("correctAnswer", Context.MODE_PRIVATE)
+        val wrongAnswerPref = getSharedPreferences("wrongAnswer", Context.MODE_PRIVATE)
+
+//        초기화
+        correctAnswerPref.edit().clear().apply()
+        wrongAnswerPref.edit().clear().apply()
     }
 
     class MyPreferenceFragment : PreferenceFragment() {
