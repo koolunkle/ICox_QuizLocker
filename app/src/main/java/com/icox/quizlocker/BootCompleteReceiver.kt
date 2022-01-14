@@ -3,8 +3,9 @@ package com.icox.quizlocker
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.preference.PreferenceManager
 import android.util.Log
-import android.widget.Toast
 
 // BroadcastReceiver 를 상속받는다
 class BootCompleteReceiver : BroadcastReceiver() {
@@ -15,7 +16,29 @@ class BootCompleteReceiver : BroadcastReceiver() {
         when {
             intent?.action == Intent.ACTION_BOOT_COMPLETED -> {
                 Log.d("QuizLocker", "부팅이 완료됨")
-                Toast.makeText(context, "퀴즈 잠금화면: 부팅이 완료됨", Toast.LENGTH_SHORT).show()
+//                퀴즈 잠금 화면 설정 값이 ON 인지 확인
+                context?.let {
+                    val pref = PreferenceManager.getDefaultSharedPreferences(context)
+                    val useLockScreen = pref.getBoolean("useLockScreen", false)
+//                    LockScreenService 시작
+                    if (useLockScreen) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            it.startForegroundService(
+                                Intent(
+                                    context,
+                                    LockScreenService::class.java
+                                )
+                            )
+                        } else {
+                            it.startService(
+                                Intent(
+                                    context,
+                                    LockScreenService::class.java
+                                )
+                            )
+                        }
+                    }
+                }
             }
         }
     }
