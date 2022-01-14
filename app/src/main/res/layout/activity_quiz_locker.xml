@@ -8,11 +8,12 @@
 
     <TextView
         android:id="@+id/quizLabel"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="165dp"
         android:layout_margin="8dp"
+        android:background="@drawable/sbubble"
         android:gravity="center"
-        android:text="포르투갈의\n수도는?"
+        android:text="대한민국의 수도는?"
         android:textSize="32sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
