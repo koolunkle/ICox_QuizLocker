@@ -15,14 +15,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QuizLocker">
+        <activity
+            android:name=".QuizLockerActivity"
+            android:exported="true" />
+
         <service
             android:name=".LockScreenService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name=".ScreenOffExActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".PrefFragmentActivity"
             android:exported="true" />
